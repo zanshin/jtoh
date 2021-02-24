@@ -2,11 +2,16 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
+	"sync"
+)
+
+var (
+	inPath  string
+	outPath string
 )
 
 func main() {
@@ -15,12 +20,15 @@ func main() {
 
 	flag.Parse()
 
-	run(*input, *output)
+	inPath = *input
+	outPath = *output
+
+	run()
 }
 
-func run(input string, output string) {
+func run() {
 
-	postDir, err := os.Open(input)
+	postDir, err := os.Open(inPath)
 	if err != nil {
 		log.Fatalf("Failed opening directory: %s", err)
 	}
@@ -31,64 +39,78 @@ func run(input string, output string) {
 		}
 	}()
 
+	var wg sync.WaitGroup
+
 	postList, _ := postDir.Readdirnames(0)
 	for _, postFile := range postList {
-		fmt.Printf("Processing: %s\t", postFile)
+		// fmt.Printf("Processing: %s\t", postFile)
 
-		// open the file to be migrated
-		filePath := postDir.Name() + "/" + postFile
-		file, err := os.Open(filePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer func() {
-			if err = file.Close(); err != nil {
-				log.Fatal(err)
-			}
-		}()
-
-		// read all the contents of the file
-		data, err := ioutil.ReadAll(file)
-		if err != nil {
-			log.Fatalf("Failed reading file %s with error: %s", data, err)
-		}
-
-		yamlPost := string(data[:])
-
-		// Parse the YAML post and make it TOML
-		tomlPost := postParser(yamlPost)
-
-		// Convert tomlPost string to postBytes []bytes
-		postBytes := []byte(tomlPost)
-
-		// Write out new file
-		outFile := output + "/" + postFile
-
-		newFile, err := os.OpenFile(
-			outFile,
-			os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
-			0666,
-		)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer func() {
-			if err != nil {
-				log.Fatal(err)
-			}
-		}()
-
-		// Write bytes to file
-		bytesWritten, err := newFile.Write(postBytes)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("Wrote %d bytes.\n", bytesWritten)
-
+		// process the post using goroutines to provide concurrency
+		// and to keep total file handle count down
+		wg.Add(1)
+		go func(postFile string) {
+			defer wg.Done()
+			postProcess(postFile)
+		}(postFile)
 	}
+
+	wg.Wait()
+
+}
+
+func postProcess(postFile string) {
+
+	inFile := inPath + "/" + postFile
+
+	// open the file to be migrated
+	file, err := os.Open(inFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// read all the contents of the file
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Failed reading file %s with error: %s", data, err)
+	}
+
+	// Convert to string, parse, convert result to []byte
+	yamlPost := string(data[:])
+	tomlPost := postParser(yamlPost)
+	postBytes := []byte(tomlPost)
+
+	// Write out new file
+	outFile := outPath + "/" + postFile
+
+	newFile, err := os.OpenFile(
+		outFile,
+		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
+		0666,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func() {
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// Write bytes to file
+	bytesWritten, err := newFile.Write(postBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Wrote %s containing %d bytes.\n", postFile, bytesWritten)
+
 }
 
 // postParser converts post front matter from YAML to TOML
