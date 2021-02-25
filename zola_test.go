@@ -37,7 +37,8 @@ layout: post
 date: 2021-02-18 17:05
 link:
 ---
-Now is the winter: of our discontent.`
+Now is the winter: of our discontent.
+{% youtube JdxkVQy7QLM %}`
 
 	tomlPost := `+++
 title = "My Title"
@@ -46,7 +47,8 @@ layout = post
 date = 2021-02-18 17:05
 link =
 +++
-Now is the winter: of our discontent.`
+Now is the winter: of our discontent.
+{{ youtube(id="JdxkVQy7QLM") }}`
 
 	result := postParser(yamlPost)
 

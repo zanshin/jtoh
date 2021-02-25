@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +13,8 @@ import (
 var (
 	inPath  string
 	outPath string
+	handles []int
+	counter int
 )
 
 func main() {
@@ -56,8 +59,11 @@ func run() {
 
 	wg.Wait()
 
+	fmt.Printf("\n\nhandle history: %v", handles)
+
 }
 
+// postProcess encapsulates the post processing process.
 func postProcess(postFile string) {
 
 	inFile := inPath + "/" + postFile
@@ -67,6 +73,8 @@ func postProcess(postFile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	counter++
+	handles = append(handles, counter)
 
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -111,6 +119,9 @@ func postProcess(postFile string) {
 	}
 	log.Printf("Wrote %s containing %d bytes.\n", postFile, bytesWritten)
 
+	counter--
+	handles = append(handles, counter)
+
 }
 
 // postParser converts post front matter from YAML to TOML
@@ -121,11 +132,20 @@ func postParser(yamlPost string) string {
 	// The closing --- will follow a new line (\n---)
 	// Hence the OR in the regex pattern
 	var reYAML = regexp.MustCompile(`(^|\n)(---)`)
+
+	// YAML elements in Jekyll are: element: value
+	// TOML elements in Zola   are: element = value
 	var reElement = regexp.MustCompile(`(\n[a-z]*)(:)(.*)?`)
+
+	// YouTube shortcode
+	// Jekyll format: {% youtube JdxkVQy7QLM %}
+	// Zola   format: {{ youtube(id="JdxkVQy7QLM") }}
+	var reYT = regexp.MustCompile(`({% )(youtube)(\s)(.{11})( %})`)
 
 	// Replace matched items with +++ and <element> =
 	yamlPost = reYAML.ReplaceAllString(yamlPost, "${1}+++")
 	yamlPost = reElement.ReplaceAllString(yamlPost, "${1} =${3}")
+	yamlPost = reYT.ReplaceAllString(yamlPost, "{{ $2(id=\"$4\") }}")
 
 	return yamlPost
 
