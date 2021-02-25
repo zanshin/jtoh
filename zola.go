@@ -140,7 +140,8 @@ func postParser(yamlPost string) string {
 	// YouTube shortcode
 	// Jekyll format: {% youtube JdxkVQy7QLM %}
 	// Zola   format: {{ youtube(id="JdxkVQy7QLM") }}
-	var reYT = regexp.MustCompile(`({% )(youtube)(\s)(.{11})( %})`)
+	// var reYT = regexp.MustCompile(`({% )(youtube)(\s)(.{11})( %})`)
+	var reYT = regexp.MustCompile(`({% )(youtube)(\s)(.*)( %})`)
 
 	// Replace matched items with +++ and <element> =
 	yamlPost = reYAML.ReplaceAllString(yamlPost, "${1}+++")
