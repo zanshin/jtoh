@@ -1,3 +1,3 @@
-module github.com/zanshin/zola
+module github.com/zanshin/jtoh
 
 go 1.16
