@@ -1,6 +1,6 @@
 # Introduction
 This project exists solely to convert blog posting files that were created for Jekyll, to ones that
-will work with [Zola](https://www.getxola.org "Zola").
+will work with [Hugo](https://gohugo.io "Hugo").
 
 ## Particulars
 ### YAML vs. TOML
