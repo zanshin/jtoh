@@ -50,7 +50,7 @@ The order of operations performed is critical. The dates must be re-formatted be
 TOML conversion, if that option has been selected. The regex matching patterns expect the date line
 to have `date:` not `date =`.
 
-Processing 2184 files takes only a few seconds.
+Processing 2181 files takes only a few seconds.
 
     Files to process: 2181
 
