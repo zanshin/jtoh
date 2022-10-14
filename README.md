@@ -31,6 +31,9 @@ others do not. All the dates need to be formatted the same.
 There are three regex transforms that make this happen. One strips the quotes, the second handles
 entries that have both the date and the time, and the last handles entries that only have the date.
 
+The end result is a date in the format YYYY-MM-DDTHH:MM. If the incoming date does not have a time,
+the time of `00:01` is used.
+
 ### TOML vs. YAML Front Matter
 Originally I was going to convert all my posting to use a TOML formatted front matter. Later I
 decided that wasn't really necessary. I did add a flag so that TOML front matter can be created, if
