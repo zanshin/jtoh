@@ -30,7 +30,7 @@ func TestPostParser(t *testing.T) {
 	// yamlPost := "---\ntitle: \"My Title\"\ncategory: blog\n---\nThis is test content"
 	// tomlPost := "+++\ntitle = \"My Title\"\ncategory = blog\n+++\nThis is test content"
 
-	yamlPost := `---
+	before:= `---
 title: "My Title"
 category: blog
 layout: post
@@ -40,20 +40,106 @@ link:
 Now is the winter: of our discontent.
 {% youtube JdxkVQy7QLM %}`
 
-	tomlPost := `+++
-title = "My Title"
-category = blog
-layout = post
-date = 2021-02-18 17:05
-link =
-+++
+	after := `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18T17:05
+link:
+---
 Now is the winter: of our discontent.
 {{ youtube(id="JdxkVQy7QLM") }}`
 
-	result := postParser(yamlPost)
+	result := postParser(before)
 
-	if result != tomlPost {
-		fmt.Fprintf(os.Stderr, "Parser failed. Expected: \n%q. \nGot: \n%q\n", tomlPost, result)
+	if result != after {
+		fmt.Fprintf(os.Stderr, "Parser failed. Expected: \n%q. \nGot: \n%q\n", after, result)
+	}
+}
+
+func TestDateQuoteParser(t *testing.T) {
+	before:= `---
+title: "My Title"
+category: blog
+layout: post
+date: "2021-02-18"
+link:
+---
+Now is the winter: of our discontent.
+{% youtube JdxkVQy7QLM %}`
+
+	after := `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18T00:01
+link:
+---
+Now is the winter: of our discontent.
+{{ youtube(id="JdxkVQy7QLM") }}`
+
+	result := postParser(before)
+
+	if result != after {
+		fmt.Fprintf(os.Stderr, "Parser failed. Expected: \n%q. \nGot: \n%q\n", after, result)
+	}
+
+}
+
+func TestDateTimeParser(t *testing.T) {
+	before:= `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18 12:34
+link:
+---
+Now is the winter: of our discontent.
+{% youtube JdxkVQy7QLM %}`
+
+	after := `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18T12:34
+link:
+---
+Now is the winter: of our discontent.
+{{ youtube(id="JdxkVQy7QLM") }}`
+
+	result := postParser(before)
+
+	if result != after {
+		fmt.Fprintf(os.Stderr, "Parser failed. Expected: \n%q. \nGot: \n%q\n", after, result)
+	}
+
+}
+
+func TestDateNoTimeParser(t *testing.T) {
+	before:= `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18
+link:
+---
+Now is the winter: of our discontent.
+{% youtube JdxkVQy7QLM %}`
+
+	after := `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18T00:01
+link:
+---
+Now is the winter: of our discontent.
+{{ youtube(id="JdxkVQy7QLM") }}`
+
+	result := postParser(before)
+
+	if result != after {
+		fmt.Fprintf(os.Stderr, "Parser failed. Expected: \n%q. \nGot: \n%q\n", after, result)
 	}
 
 }
