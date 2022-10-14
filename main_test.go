@@ -9,7 +9,7 @@ import (
 
 func TestMain(m *testing.M) {
 
-	binName := "zola"
+	binName := "main"
 	fmt.Println("Building tool...")
 	build := exec.Command("go", "build", "-o", binName)
 
