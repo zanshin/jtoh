@@ -52,10 +52,8 @@ to have `date:` not `date =`.
 
 Processing 2184 files takes only a few seconds.
 
-{% highlight shell %}
-Files to process: 2181
+    Files to process: 2181
 
-real    0m3.013s
-user    0m0.379s
-sys     0m0.453s
-{% endhighlight %}
+    real    0m3.013s
+    user    0m0.379s
+    sys     0m0.453s
