@@ -15,11 +15,16 @@ The items needing attention are:
 
 ### TODO
 - [ ] {% highlight %} {% endhighlight %}
-- [ ] {% gist ###### %}
+- [X] {% gist ###### %}
 - [ ] {% raw %} {% endraw %}
 - [ ] {% if ... %}
 - [ ] {% elsif %}
 
+### Gist Shortcodes
+The Jekyll gist shortcode works with only the ID number portion of the URL. The Hugo one requires
+the gist ID number AND the gist account name in order to function. A grep of my postings shows that
+there are only 5 instances of the gist shortcode to be modified. Far easier to do by hand than to
+fix via code.
 
 ### YouTube Shortcodes
 Hugo has a slightly different format for their YouTube shortcode than Jekyll's format. Via regular
