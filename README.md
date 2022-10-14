@@ -14,10 +14,12 @@ The items needing attention are:
 - TOML vs. YAML front matter
 
 ### TODO
-In addition to YouTube shortcodes, code hightlight needs to be addressed. Many code examples are
-simply indented 4 spaces as per Markdown rules. However, some leverage a Jekyll feature and use a
-highlight tag, with a language specified, to colorize the code. All instances of these highlight
-tags will need to be updated.
+- [ ] {% highlight %} {% endhighlight %}
+- [ ] {% gist ###### %}
+- [ ] {% raw %} {% endraw %}
+- [ ] {% if ... %}
+- [ ] {% elsif %}
+
 
 ### YouTube Shortcodes
 Hugo has a slightly different format for their YouTube shortcode than Jekyll's format. Via regular
