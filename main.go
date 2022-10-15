@@ -31,6 +31,9 @@ var (
 	endCtr int
 	dateTimeCtr int
 	dateCtr int
+
+	// bytes processed
+	bytesCtr int
 )
 
 // For limiting threads.
@@ -96,6 +99,8 @@ func run() {
 	fmt.Printf("\nQuotes stripped from dates:         %d", quotesCtr)
 	fmt.Printf("\nHighlight shortcodes converted:     %d", codeCtr)
 	fmt.Printf("\nEnd Highlight shortcodes converted: %d\n", endCtr)
+
+	fmt.Printf("\nTotal number of bytes processed:    %d\n", bytesCtr)
 	fmt.Printf("\nPost counter : %d", postCtr)
 	fmt.Printf("\nParse counter: %d", postCtr)
 
@@ -138,6 +143,8 @@ func processPost(postFile string, wg *sync.WaitGroup) {
 	original := string(data[:])
 	converted := postParser(original)
 	postBytes := []byte(converted)
+
+	bytesCtr = bytesCtr + len(postBytes)
 
 	// Write out new file
 	outFile := outPath + "/" + postFile
