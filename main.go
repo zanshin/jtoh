@@ -11,13 +11,20 @@ import (
 )
 
 var (
+	// flags
 	inPath  string
 	outPath string
 	convert bool
+
+	// track simultaneous open files
 	handles []int
 	counter int
+
+	// posts read and parsed
 	postCtr int
 	parseCtr int
+
+	// regex substituions performed
 	quotesCtr int
 	ytCtr int
 	codeCtr int
@@ -27,6 +34,8 @@ var (
 )
 
 // For limiting threads.
+// Tweaking the number (30) will increase/decrease performance based on the
+// hardware. For my M1 iMac, 30 worked well.
 var tokens = make(chan struct{}, 30)
 
 func main() {
@@ -76,7 +85,11 @@ func run() {
 
 	wg.Wait()
 
+	// Uncommenting the following line will display the file handle count as it
+	// increases and decrease while processing the source directory. The output
+	// is _not_ formatted in anyway, so it is not usually displayed.
 	// fmt.Printf("\n\nhandle history: %v", handles)
+
 	fmt.Printf("\nYouTube shortcodes converted:       %d", ytCtr)
 	fmt.Printf("\nDate and Time formats converted:    %d", dateTimeCtr)
 	fmt.Printf("\nDate only converted:                %d", dateCtr)
