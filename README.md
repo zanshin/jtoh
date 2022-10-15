@@ -78,10 +78,22 @@ The order of operations performed is critical. The dates must be re-formatted be
 TOML conversion, if that option has been selected. The regex matching patterns expect the date line
 to have `date:` not `date =`.
 
-Processing 2181 files takes only a few seconds.
+A count of each type of conversion performed is kept and displayed.
 
-    Files to process: 2181
+Processing 2252 files takes only a few seconds.
 
-    real    0m3.013s
-    user    0m0.379s
-    sys     0m0.453s
+    Files to process: 2252
+
+    YouTube shortcodes converted:       70
+    Date and Time formats converted:    482
+    Date only converted:                1770
+    Quotes stripped from dates:         282
+    Highlight shortcodes converted:     70
+    End Highlight shortcodes converted: 70
+
+    Post counter : 2252
+    Parse counter: 2252
+    real    0m3.752s
+    user    0m0.499s
+    sys     0m0.423s
+
