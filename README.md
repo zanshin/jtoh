@@ -4,7 +4,7 @@ will work with [Hugo](https://gohugo.io "Hugo").
 
 ## Particulars
 A number of things need to happen to prepare my old blog postings to work with Hugo. My site has
-approximately 2100 postings, spanning 22 years and several blogging back ends. Originally hand
+just over 2250 postings, spanning 22 years and several blogging back ends. Originally hand
 coded, the site went through Blogger, MoveableType, WordPress, and Octopress, before ending up on
 Jekyll.
 
@@ -19,6 +19,8 @@ The items needing attention are:
 - [ ] {% raw %} {% endraw %}
 - [X] {% if ... %}
 - [X] {% elsif %}
+- [X] Capture and display conversion event counts
+- [ ] Inline {% highlight %}{% endhighlight %} instances
 
 ### Gist Shortcodes
 The Jekyll gist shortcode works with only the ID number portion of the URL. The Hugo one requires
