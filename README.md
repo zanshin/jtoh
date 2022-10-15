@@ -17,8 +17,8 @@ The items needing attention are:
 - [X] {% highlight %} {% endhighlight %}
 - [X] {% gist ###### %}
 - [ ] {% raw %} {% endraw %}
-- [ ] {% if ... %}
-- [ ] {% elsif %}
+- [X] {% if ... %}
+- [X] {% elsif %}
 
 ### Gist Shortcodes
 The Jekyll gist shortcode works with only the ID number portion of the URL. The Hugo one requires
@@ -33,9 +33,20 @@ pieces of information changes from `{% ... %}` to `{{< ... >}}`.
 
 The `{% endhightlight %}` in Jekyll becomes `{{< / highlight >}}` in Hugo.
 
+### Raw Shortcodes
+The `raw` shortcode works (mostly) in tandem with the `highlight` shortcode. It allows you to put
+anything in for the code block, and ignores it. I don't see an equivalent code in Hugo, so I am
+going to eliminate the `raw` code occurrences. There are only 11, so if I have to do some manual
+editing of posts, it would be manageable.
+
 ### YouTube Shortcodes
 Hugo has a slightly different format for their YouTube shortcode than Jekyll's format. Via regular
 expressions `{% youtube JdxkVQy7QLM %}` becomes `{{ youtube(id="JdxkVQy7QLM") }}`.
+
+### IF and ELSIF
+While my  initial grepping showed that there were some `{% if %}` and `{% elsif %}` tags in my
+postings, a closer look reveals that they are all in code samples, and not part of the site that
+needs converting.
 
 ### Date Formatting
 Due to the age of my site, and the different blogging systems used, the front matter date is
