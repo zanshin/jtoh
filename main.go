@@ -18,9 +18,12 @@ var (
 	counter int
 	postCtr int
 	parseCtr int
-	// quotesCtr int
-	// timeCtr int
-	// ytCtr int
+	quotesCtr int
+	ytCtr int
+	codeCtr int
+	endCtr int
+	dateTimeCtr int
+	dateCtr int
 )
 
 // For limiting threads.
@@ -74,6 +77,12 @@ func run() {
 	wg.Wait()
 
 	// fmt.Printf("\n\nhandle history: %v", handles)
+	fmt.Printf("\nYouTube shortcodes converted:       %d", ytCtr)
+	fmt.Printf("\nDate and Time formats converted:    %d", dateTimeCtr)
+	fmt.Printf("\nDate only converted:                %d", dateCtr)
+	fmt.Printf("\nQuotes stripped from dates:         %d", quotesCtr)
+	fmt.Printf("\nHighlight shortcodes converted:     %d", codeCtr)
+	fmt.Printf("\nEnd Highlight shortcodes converted: %d\n", endCtr)
 	fmt.Printf("\nPost counter : %d", postCtr)
 	fmt.Printf("\nParse counter: %d", postCtr)
 
@@ -156,6 +165,7 @@ func processPost(postFile string, wg *sync.WaitGroup) {
 // postParser converts post front matter from YAML to TOML
 func postParser(post string) string {
 
+	var before string
 	parseCtr++
 
 	// Regex pattern to match YAML --- and <element>:
@@ -202,11 +212,18 @@ func postParser(post string) string {
 
 
 	// Strip quotes from dates
+	before = post
 	post= reQuotes.ReplaceAllString(post, "\n${1} ${3}\n")
+	quotesCtr = eventCount(before, post, quotesCtr)
 
 	// Format timeless dates and dates with times
+	before = post
 	post= reDateTime.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T${6}:${7}\n")
+	dateTimeCtr = eventCount(before, post, dateTimeCtr)
+
+	before = post
 	post= reDate.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T00:01\n")
+	dateCtr = eventCount(before, post, dateCtr)
 
 	// TOML Conversion, if requested
 	// Replace matched items with +++ and <element> =
@@ -217,11 +234,25 @@ func postParser(post string) string {
 	}
 
 	// Convert shortcode
+	before = post
 	post= reYT.ReplaceAllString(post, "{{ $2(id=\"$3\") }}")
+    ytCtr = eventCount(before, post, ytCtr)
+
+	before = post
 	post= reEnd.ReplaceAllString(post, "{{< / highlight >}}")
+    endCtr = eventCount(before, post, endCtr)
+
+	before = post
 	post= reCode.ReplaceAllString(post, "{{< $2 $3 >}}")
+	codeCtr = eventCount(before, post, codeCtr)
 
 	return post
 
 }
 
+func eventCount(before string, post string, counter int) int {
+	if (before != post) {
+		counter++
+	}
+	return counter
+}
