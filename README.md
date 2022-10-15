@@ -14,7 +14,7 @@ The items needing attention are:
 - TOML vs. YAML front matter
 
 ### TODO
-- [ ] {% highlight %} {% endhighlight %}
+- [X] {% highlight %} {% endhighlight %}
 - [X] {% gist ###### %}
 - [ ] {% raw %} {% endraw %}
 - [ ] {% if ... %}
@@ -25,6 +25,13 @@ The Jekyll gist shortcode works with only the ID number portion of the URL. The 
 the gist ID number AND the gist account name in order to function. A grep of my postings shows that
 there are only 5 instances of the gist shortcode to be modified. Far easier to do by hand than to
 fix via code.
+
+### Code Highlighting
+While the Hugo highlight shortcode offers more features than the Jekyll one, they both have the
+same data requirements: the word "highlight" and a language name. The brackets surrounding these two
+pieces of information changes from `{% ... %}` to `{{< ... >}}`.
+
+The `{% endhightlight %}` in Jekyll becomes `{{< / highlight >}}` in Hugo.
 
 ### YouTube Shortcodes
 Hugo has a slightly different format for their YouTube shortcode than Jekyll's format. Via regular

@@ -168,12 +168,17 @@ func postParser(post string) string {
 	// TOML elements in Hugo are: element = value
 	var reElement = regexp.MustCompile(`(\n[a-z]*)(:)(.*)?`)
 
-	// YouTube shortcode
+	// Shortcodes
+	// YouTube
 	// Jekyll format: {% youtube JdxkVQy7QLM %}
 	// Hugo   format: {{ youtube(id="JdxkVQy7QLM") }}
-	// var reYT = regexp.MustCompile(`({% )(youtube)(\s)(.{11})( %})`)
 
-	var reYT = regexp.MustCompile(`({% )(youtube)(\s)(.*)( %})`)
+	var reYT = regexp.MustCompile(`({% )(youtube)\s(.*)( %})`)
+
+	// highlight and endhighlight
+	// MUST process End before Code, as Code will also match original end
+	var reCode = regexp.MustCompile(`({% )(highlight)\s(.*)( %})`)
+	var reEnd = regexp.MustCompile(`{% endhighlight %}`)
 
 	// Posts have a variety of date formats. Some dates are enclosed in
 	// double-quotes, some have 2-digits for month or day, while others do not.
@@ -211,8 +216,10 @@ func postParser(post string) string {
 		post = reElement.ReplaceAllString(post, "${1} =${3}")
 	}
 
-	// Convert YoutTube shortcode
-	post= reYT.ReplaceAllString(post, "{{ $2(id=\"$4\") }}")
+	// Convert shortcode
+	post= reYT.ReplaceAllString(post, "{{ $2(id=\"$3\") }}")
+	post= reEnd.ReplaceAllString(post, "{{< / highlight >}}")
+	post= reCode.ReplaceAllString(post, "{{< $2 $3 >}}")
 
 	return post
 

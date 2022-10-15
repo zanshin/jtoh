@@ -143,3 +143,40 @@ Now is the winter: of our discontent.
 	}
 
 }
+
+func TestHighlight(t *testing.T) {
+	before:= `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18
+link:
+---
+Now is the winter: of our discontent.
+{% highlight bash %}
+blah
+blah
+blah
+{% endhighlight %}`
+
+	after := `---
+title: "My Title"
+category: blog
+layout: post
+date: 2021-02-18T00:01
+link:
+---
+Now is the winter: of our discontent.
+{{< highlight bash >}}
+blah
+blah
+blah
+{{< / highlight >}}`
+
+	result := postParser(before)
+
+	if result != after {
+		fmt.Fprintf(os.Stderr, "Parser failed. Expected: \n%q. \nGot: \n%q\n", after, result)
+	}
+
+}
