@@ -9,7 +9,9 @@ coded, the site went through Blogger, MoveableType, WordPress, and Octopress, be
 Jekyll.
 
 The items needing attention are:
-- YouTube shortcodes
+- Shortcodes: YouTube and Gist
+- Code highlighting
+- Other Liquid markup
 - Date formatting
 - TOML vs. YAML front matter
 
@@ -93,9 +95,20 @@ Processing 2252 files takes only a few seconds.
     Highlight shortcodes converted:     70
     End Highlight shortcodes converted: 70
 
+    Total number of bytes processed:    4241847
+
     Post counter : 2252
     Parse counter: 2252
-    real    0m3.752s
-    user    0m0.499s
-    sys     0m0.423s
+    real    0m3.607s
+    user    0m0.487s
+    sys     0m0.441s
 
+## Running
+Clone the project onto your `$GOPATH`. Create a temporary directory that has two sub-directories:
+`dest` and `source`. Copy all your postings to `source`. My `$GOPATH` is
+`~/code/go` so after cloning the project to `~/code/go/src/github` I run this command, while inside
+the temporary directory:
+
+    time go run ~/code/go/src/github.com/zanshin/jtoh/main.go -i source -o dest
+
+Adding `time` to the start of the command will show how long the conversion took.
