@@ -30,6 +30,11 @@ the gist ID number AND the gist account name in order to function. A grep of my 
 there are only 5 instances of the gist shortcode to be modified. Far easier to do by hand than to
 fix via code.
 
+### Inline code highlighting
+There are four postings that make heavy use of the Jekyll highlight shortcode inline, rather than as
+a separate block. This proved to be problematic to convert. Those posting, like the ones with Gists,
+will be manually updated.
+
 ### Code Highlighting
 While the Hugo highlight shortcode offers more features than the Jekyll one, they both have the
 same data requirements: the word "highlight" and a language name. The brackets surrounding these two
@@ -53,15 +58,20 @@ postings, a closer look reveals that they are all in code samples, and not part 
 needs converting.
 
 ### Date Formatting
-Due to the age of my site, and the different blogging systems used, the front matter date is
-inconsistently formatted. Some dates are in double quotes, some are not. Some have a time specified,
-others do not. All the dates need to be formatted the same.
+Getting all the posting to have a valid date, that Hugo can work with, was by far the most difficult
+problem to solve in this conversion. Due to the age of my site, and the different blogging systems
+used, the front matter date is inconsistently formatted. Some dates are in double quotes, some are
+not. Some have a time specified, others do not. All the dates need to be formatted the same.
 
-There are three regex transforms that make this happen. One strips the quotes, the second handles
-entries that have both the date and the time, and the last handles entries that only have the date.
+There are five regex transforms that make this happen.
+- One strips the quotes
+- One adds a leading zero to the month if it is a single digit
+- One adds a leading zero to the day if it is a single digit
+- One adds seconds to time that are only HH:MM
+- One adds time to dates that don't have any time specified
 
-The end result is a date in the format YYYY-MM-DDTHH:MM. If the incoming date does not have a time,
-the time of `00:01` is used.
+The end result is a date in the format YYYY-MM-DDTHH:MM:SS. Where a time is appended to a date, it
+cannot start with `00`.
 
 ### TOML vs. YAML Front Matter
 Originally I was going to convert all my posting to use a TOML formatted front matter. Later I
