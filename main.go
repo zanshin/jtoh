@@ -31,6 +31,8 @@ var (
 	endCtr int
 	dateTimeCtr int
 	dateCtr int
+	monthsCtr int
+	daysCtr int
 
 	// bytes processed
 	bytesCtr int
@@ -97,6 +99,8 @@ func run() {
 	fmt.Printf("\nDate and Time formats converted:    %d", dateTimeCtr)
 	fmt.Printf("\nDate only converted:                %d", dateCtr)
 	fmt.Printf("\nQuotes stripped from dates:         %d", quotesCtr)
+	fmt.Printf("\nLeading zero added to M:            %d", monthsCtr)
+	fmt.Printf("\nLeading zero added to D:            %d", daysCtr)
 	fmt.Printf("\nHighlight shortcodes converted:     %d", codeCtr)
 	fmt.Printf("\nEnd Highlight shortcodes converted: %d\n", endCtr)
 
@@ -207,7 +211,7 @@ func postParser(post string) string {
 
 	// highlight and endhighlight
 	// MUST process End before Code, as Code will also match original end
-	var reCode = regexp.MustCompile(`({% )(highlight)\s(.*)( %})`)
+	var reCode = regexp.MustCompile(`({% highlight )(.*)( %})`)
 	var reEnd = regexp.MustCompile(`{% endhighlight %}`)
 
 	// Posts have a variety of date formats. Some dates are enclosed in
@@ -226,23 +230,35 @@ func postParser(post string) string {
 	// To bound the regex expression, a trailing new line character is also
 	// used.
 	//
-	var reQuotes = regexp.MustCompile(`\n(date:).*(")(.*)(")\n`)
+	var reQuotes = regexp.MustCompile(`\n(date: )"(.*)"\n`)
+	var reMonth = regexp.MustCompile(`\n(date: )(.*)-([0-9])-(.*)\n`)
+	var reDay = regexp.MustCompile(`\n(date: )(.*)-(.*)-([0-9])\n`)
 	var reDate = regexp.MustCompile(`\n(date:)\s*((19|20)[0-9][0-9])-([0|1]?[0-9])-([0|1|2|3]?[0-9])\n`)
 	var reDateTime = regexp.MustCompile(`\n(date:)\s*((19|20)[0-9][0-9])-([0|1]?[0-9])-([0|1|2|3]?[0-9])\s{1}([0-1]?[0-9]|2[0-3]):([0-5][0-9])(.*)?\n`)
 
 
 	// Strip quotes from dates
 	before = post
-	post= reQuotes.ReplaceAllString(post, "\n${1} ${3}\n")
+	post= reQuotes.ReplaceAllString(post, "\n${1}${2}\n")
 	quotesCtr = eventCount(before, post, quotesCtr)
+
+	// Add leading 0 to single digit months
+	before = post
+	post = reMonth.ReplaceAllString(post, "\n${1}${2}-0${3}-${4}\n")
+	monthsCtr = eventCount(before, post, monthsCtr)
+
+	// Add leading 0 to single digit days
+	before = post
+	post = reDay.ReplaceAllString(post, "\n${1}${2}-${3}-0${4}\n")
+	daysCtr = eventCount(before, post, daysCtr)
 
 	// Format timeless dates and dates with times
 	before = post
-	post= reDateTime.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T${6}:${7}\n")
+	post= reDateTime.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T${6}:${7}:00\n")
 	dateTimeCtr = eventCount(before, post, dateTimeCtr)
 
 	before = post
-	post= reDate.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T00:01\n")
+	post= reDate.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T03:02:00\n")
 	dateCtr = eventCount(before, post, dateCtr)
 
 	// TOML Conversion, if requested
@@ -263,7 +279,7 @@ func postParser(post string) string {
     endCtr = eventCount(before, post, endCtr)
 
 	before = post
-	post= reCode.ReplaceAllString(post, "{{< $2 $3 >}}")
+	post= reCode.ReplaceAllString(post, "{{< highlight $2 >}}")
 	codeCtr = eventCount(before, post, codeCtr)
 
 	return post
