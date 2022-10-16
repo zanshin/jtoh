@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -33,6 +34,7 @@ var (
 	dateCtr int
 	monthsCtr int
 	daysCtr int
+	tagCtr int
 
 	// bytes processed
 	bytesCtr int
@@ -102,9 +104,10 @@ func run() {
 	fmt.Printf("\nLeading zero added to M:            %d", monthsCtr)
 	fmt.Printf("\nLeading zero added to D:            %d", daysCtr)
 	fmt.Printf("\nHighlight shortcodes converted:     %d", codeCtr)
-	fmt.Printf("\nEnd Highlight shortcodes converted: %d\n", endCtr)
+	fmt.Printf("\nEnd Highlight shortcodes converted: %d", endCtr)
+	fmt.Printf("\nCategories converted to tags:       %d", tagCtr)
 
-	fmt.Printf("\nTotal number of bytes processed:    %d\n", bytesCtr)
+	fmt.Printf("\n\nTotal number of bytes processed:    %d\n", bytesCtr)
 	fmt.Printf("\nPost counter : %d", postCtr)
 	fmt.Printf("\nParse counter: %d", postCtr)
 
@@ -214,6 +217,14 @@ func postParser(post string) string {
 	var reCode = regexp.MustCompile(`({% highlight )(.*)( %})`)
 	var reEnd = regexp.MustCompile(`{% endhighlight %}`)
 
+	// Taxonomies
+	// Converting the exiting `categories: <value> [<value> ...]` lines
+	// requires two steps. First the line needs to be parsed to more than one
+	// category, e.g., "life health" or "nerdliness apple". Once the line is
+	// parsed, then a new `tags: ['value', 'value', ...]` line can be
+	// generated.
+	var reTags = regexp.MustCompile(`\ncategories:.*\n`)
+
 	// Posts have a variety of date formats. Some dates are enclosed in
 	// double-quotes, some have 2-digits for month or day, while others do not.
 	// Some dates include a time, others do not.
@@ -284,6 +295,12 @@ func postParser(post string) string {
 	post= reCode.ReplaceAllString(post, "{{< highlight $2 >}}")
 	codeCtr = eventCount(before, post, codeCtr)
 
+	before = post
+	categories := reTags.FindString(post)
+	tags := tagParser(categories)
+	post = reTags.ReplaceAllString(post, tags)
+	tagCtr = eventCount(before, post,tagCtr)
+
 	return post
 
 }
@@ -293,4 +310,21 @@ func eventCount(before string, post string, counter int) int {
 		counter++
 	}
 	return counter
+}
+
+func tagParser(categories string) string {
+	// incoming category string format: value [value value ...]
+	// result needs to be: tags: ["value", "value", ...]
+	result := "\ntags:"
+	values := strings.Fields(categories)
+
+	// skip index 0 as it contains "categories:"
+	for x := 1; x < len(values); x++ {
+			result = result + fmt.Sprintf("\n- %s", values[x])
+	}
+
+	result = result + "\n"
+
+	return result
+
 }
