@@ -295,6 +295,10 @@ func postParser(post string) string {
 	post= reCode.ReplaceAllString(post, "{{< highlight $2 >}}")
 	codeCtr = eventCount(before, post, codeCtr)
 
+	// Use FindStrings to capture categories from stream, delimited by newlines
+	// Parse captured categories making string with `tags` and properly notated
+	// values, also newline delimited
+	// ReplaceAllString to substitue new string in for original
 	before = post
 	categories := reTags.FindString(post)
 	tags := tagParser(categories)
@@ -314,7 +318,6 @@ func eventCount(before string, post string, counter int) int {
 
 func tagParser(categories string) string {
 	// incoming category string format: value [value value ...]
-	// result needs to be: tags: ["value", "value", ...]
 	result := "\ntags:"
 	values := strings.Fields(categories)
 
