@@ -229,7 +229,7 @@ func postParser(post string) string {
 	// double-quotes, some have 2-digits for month or day, while others do not.
 	// Some dates include a time, others do not.
 	// Goal: have all dates in the form YYYY-MM-DDTHH:MM:SS
-	// There are fiveregex expressions in use:
+	// There are five regex expressions in use:
 	// reQuotes   - strips any double quotes found from around dates
 	// reDate     - matches dates without a time, spams T00:01 at the time
 	// reDateTime - matches dates that have times, preserves the time
