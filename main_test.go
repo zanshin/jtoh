@@ -44,7 +44,7 @@ Now is the winter: of our discontent.
 title: "My Title"
 category: blog
 layout: post
-date: 2021-02-18T17:05
+date: 2021-02-18T17:05:00
 link:
 ---
 Now is the winter: of our discontent.
@@ -72,7 +72,7 @@ Now is the winter: of our discontent.
 title: "My Title"
 category: blog
 layout: post
-date: 2021-02-18T00:01
+date: 2021-02-18T03:02:00
 link:
 ---
 Now is the winter: of our discontent.
@@ -101,7 +101,7 @@ Now is the winter: of our discontent.
 title: "My Title"
 category: blog
 layout: post
-date: 2021-02-18T12:34
+date: 2021-02-18T12:34:00
 link:
 ---
 Now is the winter: of our discontent.
@@ -130,7 +130,7 @@ Now is the winter: of our discontent.
 title: "My Title"
 category: blog
 layout: post
-date: 2021-02-18T00:01
+date: 2021-02-18T03:02:00
 link:
 ---
 Now is the winter: of our discontent.
@@ -163,7 +163,7 @@ blah
 title: "My Title"
 category: blog
 layout: post
-date: 2021-02-18T00:01
+date: 2021-02-18T03:02:00
 link:
 ---
 Now is the winter: of our discontent.
