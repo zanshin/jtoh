@@ -23,8 +23,8 @@ Clone the repository to your $GOPATH.
     git clone https://github.com/zanshin/jtoh.git $GOPATH/src/github/zanshin/jtoh
 
 # Building
-I am not including an executable with the repository. After making modifications for your Jekyll
-installation, you can build your own.
+The repository does not contain a pre-built executable. One can be made for the current platform
+using:
 
     go build .
 
