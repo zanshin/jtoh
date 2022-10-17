@@ -7,7 +7,7 @@ jtoh - Convert Jekyll-formatted blog posts to Hugo-formatting
 
 # Description
 `jtoh` converts a number of front matter elements, as well as some shortcodes from Jekyll formatting
-to Hugo formatting.
+to Hugo formatting. See [DETAILS](DETAILS.md) for more information.
 
 # Options
 
