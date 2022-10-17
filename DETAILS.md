@@ -14,6 +14,7 @@ The items needing attention are:
 - Other Liquid markup
 - Date formatting
 - TOML vs. YAML front matter
+- Category / Tag formatting
 
 ### TODO
 - [X] {% highlight %} {% endhighlight %}
@@ -72,6 +73,17 @@ There are five regex transforms that make this happen.
 
 The end result is a date in the format YYYY-MM-DDTHH:MM:SS. Where a time is appended to a date, it
 cannot start with `00`.
+
+### Tags
+Convert `categories: value[, value, ...]` to
+
+    tags:
+    - value
+    - value
+
+Since dealing with an unknown number of optional groups in regex isn't really possible, there is a
+function that parses the incoming categories line and feeds the parsed result to a regex to update
+the stream.
 
 ### TOML vs. YAML Front Matter
 Originally I was going to convert all my posting to use a TOML formatted front matter. Later I
