@@ -22,19 +22,19 @@ var (
 	counter int
 
 	// posts read and parsed
-	postCtr int
+	postCtr  int
 	parseCtr int
 
 	// regex substituions performed
-	quotesCtr int
-	ytCtr int
-	codeCtr int
-	endCtr int
+	quotesCtr   int
+	ytCtr       int
+	codeCtr     int
+	endCtr      int
 	dateTimeCtr int
-	dateCtr int
-	monthsCtr int
-	daysCtr int
-	tagCtr int
+	dateCtr     int
+	monthsCtr   int
+	daysCtr     int
+	tagCtr      int
 
 	// bytes processed
 	bytesCtr int
@@ -249,10 +249,9 @@ func postParser(post string) string {
 	var reDate = regexp.MustCompile(`\n(date:)\s*((19|20)[0-9][0-9])-([0|1]?[0-9])-([0|1|2|3]?[0-9])\n`)
 	var reDateTime = regexp.MustCompile(`\n(date:)\s*((19|20)[0-9][0-9])-([0|1]?[0-9])-([0|1|2|3]?[0-9])\s{1}([0-1]?[0-9]|2[0-3]):([0-5][0-9])(.*)?\n`)
 
-
 	// Strip quotes from dates
 	before = post
-	post= reQuotes.ReplaceAllString(post, "\n${1}${2}\n")
+	post = reQuotes.ReplaceAllString(post, "\n${1}${2}\n")
 	quotesCtr = eventCount(before, post, quotesCtr)
 
 	// Add leading 0 to single digit months
@@ -267,11 +266,11 @@ func postParser(post string) string {
 
 	// Format timeless dates and dates with times
 	before = post
-	post= reDateTime.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T${6}:${7}:00\n")
+	post = reDateTime.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T${6}:${7}:00\n")
 	dateTimeCtr = eventCount(before, post, dateTimeCtr)
 
 	before = post
-	post= reDate.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T03:02:00\n")
+	post = reDate.ReplaceAllString(post, "\n${1} ${2}-${4}-${5}T03:02:00\n")
 	dateCtr = eventCount(before, post, dateCtr)
 
 	// TOML Conversion, if requested
@@ -284,33 +283,33 @@ func postParser(post string) string {
 
 	// Convert shortcode
 	before = post
-	post= reYT.ReplaceAllString(post, "{{ $2(id=\"$3\") }}")
-    ytCtr = eventCount(before, post, ytCtr)
+	post = reYT.ReplaceAllString(post, "{{ $2(id=\"$3\") }}")
+	ytCtr = eventCount(before, post, ytCtr)
 
 	before = post
-	post= reEnd.ReplaceAllString(post, "{{< / highlight >}}")
-    endCtr = eventCount(before, post, endCtr)
+	post = reEnd.ReplaceAllString(post, "{{< / highlight >}}")
+	endCtr = eventCount(before, post, endCtr)
 
 	before = post
-	post= reCode.ReplaceAllString(post, "{{< highlight $2 >}}")
+	post = reCode.ReplaceAllString(post, "{{< highlight $2 >}}")
 	codeCtr = eventCount(before, post, codeCtr)
 
 	// Use FindStrings to capture categories from stream, delimited by newlines
 	// Parse captured categories making string with `tags` and properly notated
 	// values, also newline delimited
-	// ReplaceAllString to substitue new string in for original
+	// ReplaceAllString to substitute new string in for original
 	before = post
 	categories := reTags.FindString(post)
 	tags := tagParser(categories)
 	post = reTags.ReplaceAllString(post, tags)
-	tagCtr = eventCount(before, post,tagCtr)
+	tagCtr = eventCount(before, post, tagCtr)
 
 	return post
 
 }
 
 func eventCount(before string, post string, counter int) int {
-	if (before != post) {
+	if before != post {
 		counter++
 	}
 	return counter
@@ -323,7 +322,7 @@ func tagParser(categories string) string {
 
 	// skip index 0 as it contains "categories:"
 	for x := 1; x < len(values); x++ {
-			result = result + fmt.Sprintf("\n- %s", values[x])
+		result = result + fmt.Sprintf("\n- %s", values[x])
 	}
 
 	result = result + "\n"
