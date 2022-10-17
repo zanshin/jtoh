@@ -1,3 +1,4 @@
+// Not a complete test suite, needs to be extended
 package main
 
 import (
