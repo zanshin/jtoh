@@ -19,11 +19,11 @@ The items needing attention are:
 ### TODO
 - [X] {% highlight %} {% endhighlight %}
 - [X] {% gist ###### %}
-- [ ] {% raw %} {% endraw %}
+- [X] {% raw %} {% endraw %}
 - [X] {% if ... %}
 - [X] {% elsif %}
 - [X] Capture and display conversion event counts
-- [ ] Inline {% highlight %}{% endhighlight %} instances
+- [X] Inline {% highlight %}{% endhighlight %} instances
 
 ### Gist Shortcodes
 The Jekyll gist shortcode works with only the ID number portion of the URL. The Hugo one requires
