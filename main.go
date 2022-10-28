@@ -195,7 +195,10 @@ func processPost(postFile string, wg *sync.WaitGroup) {
 
 }
 
-// postParser converts post front matter from YAML to TOML
+// postParser converts various bits of Markdown, front matter, and shortcodes
+// from Jekyll formatting to Hugo formatting. Yes, parsing HTML or HTML like
+// things with regix is foolish. This worked for the finite set of edge
+// conditions my postings had. YMMV.
 func postParser(post string) string {
 
 	var before string
@@ -218,18 +221,8 @@ func postParser(post string) string {
 	// Hugo   format: {{ youtube(id="JdxkVQy7QLM") }}
 	var reYT = regexp.MustCompile(`({% )(youtube)\s(.*)( %})`)
 
-	// TODO
-	// img
-	// Jekyll format:
-	// <img src="http://www.zanshin.net/images/108.jpg" width="450" height="192" alt="car thermometer showing 108 degrees">
-	//
-	// Hugo format:
-	// {{ $image := .Resources.GetMatch "108.jpg" }}
-	// <img src="{{ $image.RelPermalink }}" width="450" height="192" alt="car
-	// thermometer showing 108 degrees">
-	//
-	// <img src="{{ $image.RelPermalink }}" width="{{ $image.width }}" height="{{ $image.height }}" alt="car
-	// thermometer showing 108 degrees">
+	// Images
+	// Find any image tag so it can be passed it to a parser.
 	var reImage = regexp.MustCompile(`<img .*>`)
 
 	// highlight and endhighlight
@@ -239,10 +232,8 @@ func postParser(post string) string {
 
 	// Taxonomies
 	// Converting the exiting `categories: <value> [<value> ...]` lines
-	// requires two steps. First the line needs to be parsed to more than one
-	// category, e.g., "life health" or "nerdliness apple". Once the line is
-	// parsed, then a new `tags: ['value', 'value', ...]` line can be
-	// generated.
+	// requires a parser. With an unknown number of potential categoies, there
+	// is no way to use regex alone to accomplish this conversion.
 	var reTags = regexp.MustCompile(`\ncategories:.*\n`)
 
 	// Posts have a variety of date formats. Some dates are enclosed in
@@ -268,6 +259,10 @@ func postParser(post string) string {
 	var reDay = regexp.MustCompile(`\n(date: )(.*)-(.*)-([0-9])\n`)
 	var reDate = regexp.MustCompile(`\n(date:)\s*((19|20)[0-9][0-9])-([0|1]?[0-9])-([0|1|2|3]?[0-9])\n`)
 	var reDateTime = regexp.MustCompile(`\n(date:)\s*((19|20)[0-9][0-9])-([0|1]?[0-9])-([0|1|2|3]?[0-9])\s{1}([0-1]?[0-9]|2[0-3]):([0-5][0-9])(.*)?\n`)
+
+	//
+	// With all the expressions defined, put them to use
+	//
 
 	// Strip quotes from dates
 	before = post
@@ -340,6 +335,7 @@ func postParser(post string) string {
 
 }
 
+// Determine if a change was made, and increment a counter as necessary
 func eventCount(before string, post string, counter int) int {
 	if before != post {
 		counter++
@@ -365,6 +361,10 @@ func tagParser(categories string) string {
 
 }
 
+// Use the net/html library to parse the incoming string into a set of
+// key:value pairs. Examine the keys to find the image source and create the
+// .ResourceGetMatch line, and concatenate the remaining keys and their values
+// to the end of the new <img ..> tag.
 func imageParser(img string) string {
 	doc, err := html.Parse(strings.NewReader(img))
 	if err != nil {
