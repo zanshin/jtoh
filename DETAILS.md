@@ -9,21 +9,21 @@ coded, the site went through Blogger, MoveableType, WordPress, and Octopress, be
 Jekyll.
 
 The items needing attention are:
-- Shortcodes: YouTube and Gist
-- Code highlighting
-- Other Liquid markup
-- Date formatting
-- TOML vs. YAML front matter
-- Category / Tag formatting
+- Shortcodes:
+  - YouTube
+  - Gist
+  - Code highlighting
+  - images
+- Front Matter
+  - Date formatting
+  - Convert "categories" line to "tags" list
+  - Add URL tag preserve Jekyll YYYY/MM/DD/slug permalinks
+  - Optionally convert from YAML to TOML front matter
 
-### TODO
-- [X] {% highlight %} {% endhighlight %}
-- [X] {% gist ###### %}
-- [X] {% raw %} {% endraw %}
-- [X] {% if ... %}
-- [X] {% elsif %}
-- [X] Capture and display conversion event counts
-- [X] Inline {% highlight %}{% endhighlight %} instances
+## Shortcodes
+### YouTube Shortcodes
+Hugo has a slightly different format for their YouTube shortcode than Jekyll's format. Via regular
+expressions `{% youtube JdxkVQy7QLM %}` becomes `{{ youtube(id="JdxkVQy7QLM") }}`.
 
 ### Gist Shortcodes
 The Jekyll gist shortcode works with only the ID number portion of the URL. The Hugo one requires
@@ -49,15 +49,19 @@ anything in for the code block, and ignores it. I don't see an equivalent code i
 going to eliminate the `raw` code occurrences. There are only 11, so if I have to do some manual
 editing of posts, it would be manageable.
 
-### YouTube Shortcodes
-Hugo has a slightly different format for their YouTube shortcode than Jekyll's format. Via regular
-expressions `{% youtube JdxkVQy7QLM %}` becomes `{{ youtube(id="JdxkVQy7QLM") }}`.
 
 ### IF and ELSIF
 While my  initial grepping showed that there were some `{% if %}` and `{% elsif %}` tags in my
 postings, a closer look reveals that they are all in code samples, and not part of the site that
 needs converting.
 
+### Images
+The single line and Jekyll shortcode need to be replaced with two Hugo shortcodes, most easily coded
+across two lines. Using a regular expression the entire `<ing src=...>` string is captured and
+passed to a parser. The parser breaks the string down, extracting the image and its metadata. These
+piece of information are combined into the Hugo image processing shortcodes.
+
+## Front Matter
 ### Date Formatting
 Getting all the posting to have a valid date, that Hugo can work with, was by far the most difficult
 problem to solve in this conversion. Due to the age of my site, and the different blogging systems
@@ -94,6 +98,19 @@ These YAML specific elements will be converted to TOML specific elements.
 
 * The `---` will become `+++`
 * The `title:` will become `title =`
+
+TODO
+### URL
+In order to preserve the permalink all the Jekyll postings have, the `url` attribute of the front
+matter needs to be constructed using the date from the post title. The end result
+
+    url: "YYYY/MM/dd/slug
+
+will give each historical post the proper URL. New posting will be allowed to use just the article
+title (slug) as their canonical URL.
+
+This process hasn't been constructed yet, but will most likely employ more regular expressions and
+perhaps another parser function.
 
 ## Processing
 Rather than read each posting file line-by-line and process them that way, I treat each posting as a
