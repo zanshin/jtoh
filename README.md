@@ -30,7 +30,7 @@ using:
 
 # Running
 
-    jtoh -i /path/to/source -o /path/to/dest
+    $ jtoh -i source -o dest
     Files to process: 2248
 
     YouTube shortcodes converted:       70
@@ -42,8 +42,9 @@ using:
     Highlight shortcodes converted:     66
     End Highlight shortcodes converted: 66
     Categories converted to tags:       2248
+    Image shortcodes converted:         88
 
-    Total number of bytes processed:    4212832
+    Total number of bytes processed:    4215281
 
     Post counter : 2248
     Parse counter: 2248
