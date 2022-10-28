@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+
+	"golang.org/x/net/html"
 )
 
 var (
@@ -35,6 +37,7 @@ var (
 	monthsCtr   int
 	daysCtr     int
 	tagCtr      int
+	imgCtr      int
 
 	// bytes processed
 	bytesCtr int
@@ -106,6 +109,7 @@ func run() {
 	fmt.Printf("\nHighlight shortcodes converted:     %d", codeCtr)
 	fmt.Printf("\nEnd Highlight shortcodes converted: %d", endCtr)
 	fmt.Printf("\nCategories converted to tags:       %d", tagCtr)
+	fmt.Printf("\nImage shortcodes converted:         %d", imgCtr)
 
 	fmt.Printf("\n\nTotal number of bytes processed:    %d\n", bytesCtr)
 	fmt.Printf("\nPost counter : %d", postCtr)
@@ -195,6 +199,7 @@ func postParser(post string) string {
 	var before string
 	parseCtr++
 
+	// FRONT MATTER
 	// Regex pattern to match YAML --- and <element>:
 	// Initial --- with be at the start of the string (^---)
 	// The closing --- will follow a new line (\n---)
@@ -205,12 +210,25 @@ func postParser(post string) string {
 	// TOML elements in Hugo are: element = value
 	var reElement = regexp.MustCompile(`(\n[a-z]*)(:)(.*)?`)
 
-	// Shortcodes
+	// SHORTCODES
 	// YouTube
 	// Jekyll format: {% youtube JdxkVQy7QLM %}
 	// Hugo   format: {{ youtube(id="JdxkVQy7QLM") }}
-
 	var reYT = regexp.MustCompile(`({% )(youtube)\s(.*)( %})`)
+
+	// TODO
+	// img
+	// Jekyll format:
+	// <img src="http://www.zanshin.net/images/108.jpg" width="450" height="192" alt="car thermometer showing 108 degrees">
+	//
+	// Hugo format:
+	// {{ $image := .Resources.GetMatch "108.jpg" }}
+	// <img src="{{ $image.RelPermalink }}" width="450" height="192" alt="car
+	// thermometer showing 108 degrees">
+	//
+	// <img src="{{ $image.RelPermalink }}" width="{{ $image.width }}" height="{{ $image.height }}" alt="car
+	// thermometer showing 108 degrees">
+	var reImage = regexp.MustCompile(`<img .*>`)
 
 	// highlight and endhighlight
 	// MUST process End before Code, as Code will also match original end
@@ -281,18 +299,30 @@ func postParser(post string) string {
 		post = reElement.ReplaceAllString(post, "${1} =${3}")
 	}
 
-	// Convert shortcode
+	// Convert youtube shortcode
 	before = post
 	post = reYT.ReplaceAllString(post, "{{ $2(id=\"$3\") }}")
 	ytCtr = eventCount(before, post, ytCtr)
 
+	// Convert highlight end shortcode
 	before = post
 	post = reEnd.ReplaceAllString(post, "{{< / highlight >}}")
 	endCtr = eventCount(before, post, endCtr)
 
+	// Convert highlight shortcode
 	before = post
 	post = reCode.ReplaceAllString(post, "{{< highlight $2 >}}")
 	codeCtr = eventCount(before, post, codeCtr)
+
+	// Convert image shortcode
+	// FindStrings grabs the entire <img src ... > string and
+	// passes it to imageParser. It gets back the Hugo formatted
+	// image shortcodes, which the ReplaceAllString puts into place
+	before = post
+	img := reImage.FindString(post)
+	imgsrc := imageParser(img)
+	post = reImage.ReplaceAllString(post, imgsrc)
+	imgCtr = eventCount(before, post, imgCtr)
 
 	// Use FindStrings to capture categories from stream, delimited by newlines
 	// Parse captured categories making string with `tags` and properly notated
@@ -315,6 +345,8 @@ func eventCount(before string, post string, counter int) int {
 	return counter
 }
 
+// Use strings function to break categories line into items stored
+// in a slice. Walk the slice, formatting to the Hugo tag
 func tagParser(categories string) string {
 	// incoming category string format: value [value value ...]
 	result := "\ntags:"
@@ -329,4 +361,36 @@ func tagParser(categories string) string {
 
 	return result
 
+}
+
+func imageParser(img string) string {
+	doc, err := html.Parse(strings.NewReader(img))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// rgm is the ResourceGetMatch line of the shortcode
+	// att is the second line, with the attributes
+	rgm := ""
+	att := "<img src=\"{{ $$image.RelPermalink }}\" "
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "img" {
+			for _, a := range n.Attr {
+				if a.Key == "src" {
+					rgm = fmt.Sprintf("{{ $$image := .ResourceGetMatch %q }}\n", a.Val[strings.LastIndex(a.Val, "/")+1:])
+				} else {
+					att = att + fmt.Sprintf("%s=%q ", a.Key, a.Val)
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
+
+	att = att + ">"
+	return fmt.Sprintf("%s%s", rgm, att)
 }
