@@ -33,18 +33,21 @@ using:
     $ jtoh -i source -o dest
     Files to process: 2248
 
-    YouTube shortcodes converted:       70
+    Front Matter conversions
     Date and Time formats converted:    479
-    Date only converted:                1768
+    Date only converted:                1767
     Quotes stripped from dates:         282
     Leading zero added to M:            1351
-    Leading zero added to D:            528
+    Leading zero added to D:            527
+    Categories converted to tags:       2248
+
+    Shortcods converted
+    YouTube shortcodes converted:       70
     Highlight shortcodes converted:     66
     End Highlight shortcodes converted: 66
-    Categories converted to tags:       2248
     Image shortcodes converted:         88
 
-    Total number of bytes processed:    4215281
+    Total number of bytes processed:    4214704
 
     Post counter : 2248
     Parse counter: 2248

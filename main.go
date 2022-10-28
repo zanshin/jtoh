@@ -100,15 +100,17 @@ func run() {
 	// is _not_ formatted in anyway, so it is not usually displayed.
 	// fmt.Printf("\n\nhandle history: %v", handles)
 
-	fmt.Printf("\nYouTube shortcodes converted:       %d", ytCtr)
-	fmt.Printf("\nDate and Time formats converted:    %d", dateTimeCtr)
+	fmt.Println("\n\nFront Matter conversions")
+	fmt.Printf("Date and Time formats converted:    %d", dateTimeCtr)
 	fmt.Printf("\nDate only converted:                %d", dateCtr)
 	fmt.Printf("\nQuotes stripped from dates:         %d", quotesCtr)
 	fmt.Printf("\nLeading zero added to M:            %d", monthsCtr)
 	fmt.Printf("\nLeading zero added to D:            %d", daysCtr)
+	fmt.Printf("\nCategories converted to tags:       %d", tagCtr)
+	fmt.Println("\n\nShortcods converted")
+	fmt.Printf("YouTube shortcodes converted:       %d", ytCtr)
 	fmt.Printf("\nHighlight shortcodes converted:     %d", codeCtr)
 	fmt.Printf("\nEnd Highlight shortcodes converted: %d", endCtr)
-	fmt.Printf("\nCategories converted to tags:       %d", tagCtr)
 	fmt.Printf("\nImage shortcodes converted:         %d", imgCtr)
 
 	fmt.Printf("\n\nTotal number of bytes processed:    %d\n", bytesCtr)
