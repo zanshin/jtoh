@@ -218,7 +218,7 @@ func postParser(post string) string {
 	// SHORTCODES
 	// YouTube
 	// Jekyll format: {% youtube JdxkVQy7QLM %}
-	// Hugo   format: {{ youtube(id="JdxkVQy7QLM") }}
+	// Hugo   format: {{< youtube(id="JdxkVQy7QLM") >}}
 	var reYT = regexp.MustCompile(`({% )(youtube)\s(.*)( %})`)
 
 	// Images
@@ -298,7 +298,7 @@ func postParser(post string) string {
 
 	// Convert youtube shortcode
 	before = post
-	post = reYT.ReplaceAllString(post, "{{ $2(id=\"$3\") }}")
+	post = reYT.ReplaceAllString(post, "{{< $2 $3 >}}")
 	ytCtr = eventCount(before, post, ytCtr)
 
 	// Convert highlight end shortcode
